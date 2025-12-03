@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -158,7 +159,7 @@ public class Main {
                 String currentEnemy = enemy[random.nextInt(enemy.length)];
                 int enemyHealth = random.nextInt(61) + 40 + (combatNum - 1) * 5;
 
-            System.out.println("🗡While walking through the fields, " + currentEnemy + " appeared before you!");
+            System.out.println("\nWhile walking through the fields, " + currentEnemy + " appeared before you!");
             System.out.println();
 
             boolean combatActive = true;
@@ -265,318 +266,151 @@ public class Main {
                     inventory[inventoryCount - 1] = null;
                     inventoryCount--;
                 } else if (action == 4) {
-                    
+                    System.out.println("You surrendered!");
+                    playerRunes -= 5;
+                    if (playerRunes < 0) {
+                        playerRunes = 0;
+                    }
+                    combatActive = false;
+                    continue;
+                } else {
+                    System.out.println("Invalid action.");
+                    continue;
                 }
+
+                if (enemyHealth <= 0) {
+                    System.out.println("---------------------------------------");
+                    System.out.println("          GREAT ENEMY FELLED");
+                    System.out.println("---------------------------------------");
+
+                    String loot = potions[random.nextInt(potions.length)];
+                    int runesReward = random.nextInt(5) + 1;
+                    playerRunes += runesReward;
+
+                    if (inventoryCount < 10) {
+                        inventory[inventoryCount] = loot;
+                        inventoryCount++;
+                        System.out.println(currentEnemy + " dropped " + loot + "!");
+                    } else {
+                        System.out.println("Inventory too full to pick up loot.");
+                    }
+
+                    System.out.println("You received " + runesReward + " runes!");
+
+                    int healing = random.nextInt(maxHealth - 50 - 25 + 1) + 25;
+                    playerHealth += healing;
+                    if (playerHealth > maxHealth) {
+                        playerHealth = maxHealth;
+                    }
+                    System.out.println("You recovered " + healing + " HP.");
+
+                    combatActive = false;
+                    playerWon = true;
+                    continue;
+                }
+
+                System.out.println(currentEnemy + "'s turn!");
+                String enemyAttack = interact[random.nextInt(interact.length)];
+                int enemyBaseDmg = random.nextInt(11) + 10;
+                int enemyDmg = 0;
+
+                switch (enemyAttack) {
+                    case "normal":
+                        enemyDmg = enemyBaseDmg;
+                        System.out.println(currentEnemy + " attacks!");
+                        break;
+                    case "dodge":
+                        System.out.println(currentEnemy + " missed the attack!");
+                        break;
+                    case "critical":
+                        enemyDmg = enemyBaseDmg * 2;
+                        System.out.println(currentEnemy + " landed a crit!!");
+                        break;
+                }
+
+                playerHealth -= enemyDmg;
+                if (enemyDmg > 0) {
+                    System.out.println("You took " + enemyDmg + " damage.");
+                }
+
+                playerMana += 10;
+                if (playerMana > maxMana) {
+                    playerMana = maxMana;
+                }
+                System.out.println("You recovered 10 mana.");
+
+                if (playerHealth <= 0) {
+                    System.out.println("You have been defeated by " + currentEnemy + ".");
+                    playerAlive = false;
+                    combatActive = false;
+                }
+
+                System.out.println();
+
+                }
+
+            if (playerWon && playerAlive) {
+                System.out.println("Celebrate win at the tavern? (YES/NO)");
+                sc.nextLine();
+                String enterTavern = sc.nextLine().toUpperCase();
+
+                if (enterTavern.equals("YES")) {
+                    System.out.println("Welcome to the Tavern!");
+                    System.out.println("---------------------------------------");
+
+                    String[] tavernItems = new String[3];
+                    int[] tavernPrices = new int[3];
+
+                    for (int i = 0; i < 3; i++) {
+                        tavernItems[i] = potions[random.nextInt(potions.length)];
+                        tavernPrices[i] = random.nextInt(5)+ 2;
+                        System.out.println((i + 1) + ". " + tavernItems[i] + " - " + tavernPrices[i] + " runes");
+                    }
+                    System.out.println("4. Leave tavern");
+                    System.out.println("---------------------------------------");
+                    System.out.println("Runes: " + playerRunes);
+                    System.out.println("What would you like to buy? (1-4): ");
+
+                    int buyChoice = sc.nextInt();
+
+                    if (buyChoice >= 1 && buyChoice <= 3) {
+                        if (playerRunes >= tavernPrices[buyChoice -1]) {
+                            if (inventoryCount < 10) {
+                                playerRunes -= tavernPrices[buyChoice -1];
+                                inventoryCount++;
+                                System.out.println("You bought " + tavernItems[buyChoice -1] + "!");
+                            } else {
+                                System.out.println("Inventory full.");
+                            }
+                        } else {
+                            System.out.println("Not enough runes.");
+                        }
+                    } else {
+                        System.out.println("You left the tavern.");
+                    }
+                }
+
+                System.out.println("The adventure continues!");
+            }
             }
 
-//            int petSnack = 5;
-//            int frenchFries = 0;
-//            int miniBurger = 0;
-//
-//            boolean actionLoop = true;
-//            boolean petAlive = true;
-//
-//            while (actionLoop && petAlive) {
-//                // to check if pet died </333
-//                if (petEnergy <= 0 || petHunger <= 0 || petHappiness <= 0) {
-//                    System.out.println("---------------------------------------");
-//                    System.out.println("💔 OH NO! " + petChosen + " " + petName + " has died...");
-//
-//                    if (petEnergy <= 0) {
-//                        System.out.println(petName + " ran out of energy.");
-//                    }
-//                    if (petHunger <= 0) {
-//                        System.out.println(petName + " died of starvation.");
-//                    }
-//                    if (petHappiness <= 0) {
-//                        System.out.println(petName + " died of sadness.");
-//                    }
-//
-//                    System.out.println("---------------------------------------");
-//                    petAlive = false;
-//                    actionLoop = false;
-//                    break;
-//                }
-//
-//                int petFood = petSnack + frenchFries + miniBurger;
-//
-//                System.out.println("---------------------------------------");
-//                System.out.println(petChosen + " " + petName);
-//                System.out.println("| Energy: " + petEnergy + " | " +
-//                        "Hunger: " + petHunger + " | " +
-//                        "Happiness: " + petHappiness + " | " +
-//                        "Money: " + petMoney + " | " +
-//                        "Food: " + petFood + " | ");
-//                System.out.println("---------------------------------------");
-//
-//                System.out.println("What do you want to do?");
-//                System.out.println("1. Feed");
-//                System.out.println("2. Play");
-//                System.out.println("3. Sleep");
-//                System.out.println("4. Store");
-//                System.out.println("5. View state");
-//                System.out.println("6. Exit");
-//                System.out.println("Choose from 1-6: ");
-//
-//                int actionChosen = sc.nextInt();
-//
-//                switch (actionChosen) {
-//                    case 1:
-//                        boolean feedLoop = true;
-//
-//                        while (feedLoop) {
-//                            System.out.println("---------------------------------------");
-//                            if (petFood > 0) {
-//                                System.out.println("1. Snack Treats");
-//                                System.out.println("2. French fries");
-//                                System.out.println("3. Mini Burger");
-//                                System.out.println("4. Nothing, go back.");
-//                                System.out.println("What would you like to feed " + petName + " " + petChosen + " ?");
-//
-//                                int foodChosen = sc.nextInt();
-//
-//                                if (foodChosen == 1) {
-//                                    if (petSnack == 0) {
-//                                        System.out.println("You don't have any Snack Treats left!");
-//                                    } else {
-//                                        System.out.println("Successfully fed " + petChosen + " " + petName + "!");
-//                                        petHunger += 3;
-//                                        petEnergy -= 1;
-//                                        petSnack -= 1;
-//                                        feedLoop = false;
-//                                    }
-//                                } else if (foodChosen == 2) {
-//                                    if (frenchFries == 0) {
-//                                        System.out.println("You don't have any French Fries left!");
-//                                    } else {
-//                                        System.out.println("Successfully fed " + petChosen + " " + petName + "!");
-//                                        petHunger += 2;
-//                                        petEnergy -= 1;
-//                                        frenchFries -= 1;
-//                                        feedLoop = false;
-//                                    }
-//                                } else if (foodChosen == 3) {
-//                                    if (miniBurger == 0) {
-//                                        System.out.println("You don't have any Mini Burgers left!");
-//                                    } else {
-//                                        System.out.println("Successfully fed " + petChosen + " " + petName + "!");
-//                                        petHunger += 3;
-//                                        petEnergy -= 1;
-//                                        miniBurger -= 1;
-//                                        feedLoop = false;
-//                                    }
-//                                } else if (foodChosen == 4) {
-//                                    feedLoop = false;
-//                                    break;
-//                                } else {
-//                                    System.out.println("Invalid choice!");
-//                                }
-//
-//                            } else if (petFood == 0) {
-//                                System.out.println("You have no food left! Buy some more in the store.");
-//                                feedLoop = false;
-//                            }
-//                        }
-//                        break;
-//                    case 2:
-//                        System.out.println("---------------------------------------");
-//                        System.out.println("Choose a game to play!");
-//                        System.out.println("1. Dices");
-//                        System.out.println("2. Rock, paper, scissors");
-//                        System.out.println("3. Neither, go back.");
-//                        System.out.println("Enter your option:");
-//
-//                        int gameChosen = sc.nextInt();
-//
-//                        if (gameChosen == 1) {
-//                            System.out.println("---------------------------------------");
-//                            System.out.println("Enter 1 to throw a dice!");
-//
-//                            int choiceDices = sc.nextInt();
-//
-//                            if (choiceDices == 1) {
-//                                Random random = new Random();
-//                                int playerDice = random.nextInt(1, 7);
-//                                int petDice = random.nextInt(1, 7);
-//
-//                                System.out.println("Your dice landed on: " + playerDice);
-//                                System.out.println(petChosen + " " + petName + "'s landed on: " + petDice);
-//
-//                                if (playerDice > petDice) {
-//                                    System.out.println("You win!");
-//                                    petHappiness += 2;
-//                                    petMoney += 3;
-//                                    petEnergy -= 2;
-//                                } else if (playerDice == petDice) {
-//                                    System.out.println("It's a tie!");
-//                                } else {
-//                                    System.out.println(petChosen + " " + petName + " wins!");
-//                                    petHappiness -= 1;
-//                                }
-//
-//                            } else {
-//                                System.out.println("Invalid choice!");
-//                            }
-//
-//                        } else if (gameChosen == 2) {
-//                            Random random = new Random();
-//                            int num = random.nextInt(3);
-//                            String pet;
-//
-//                            if (num == 0) {
-//                                pet = "Rock";
-//                            } else if (num == 1) {
-//                                pet = "Paper";
-//                            } else {
-//                                pet = "Scissors";
-//                            }
-//
-//                            System.out.println("---------------------------------------");
-//                            System.out.println("Choose between Rock, Paper or Scissors: ");
-//                            sc.nextLine();
-//                            String playerOption = sc.nextLine();
-//
-//                            String result;
-//
-//                            if (pet.equalsIgnoreCase(playerOption)) {
-//                                result = "Tie!";
-//                            } else if (playerOption.equalsIgnoreCase("Rock") && pet.equalsIgnoreCase("Scissors")) {
-//                                result = "You win!";
-//                                petHappiness += 2;
-//                                petMoney += 3;
-//                                petEnergy -= 2;
-//                            } else if (playerOption.equalsIgnoreCase("Scissors") && pet.equalsIgnoreCase("Paper")) {
-//                                result = "You win!";
-//                                petHappiness += 2;
-//                                petMoney += 3;
-//                                petEnergy -= 2;
-//                            } else if (playerOption.equalsIgnoreCase("Paper") && pet.equalsIgnoreCase("Rock")) {
-//                                result = "You win!";
-//                                petHappiness += 2;
-//                                petMoney += 3;
-//                                petEnergy -= 2;
-//                            } else {
-//                                System.out.println("You did not enter a valid input.");
-//                                result = petChosen + " " + petName + " wins!";
-//                                petHappiness -= 1;
-//                            }
-//
-//                            System.out.println("You: " + playerOption + " | " + petChosen + ": " + pet + " → " + result);
-//                        } else if (gameChosen == 3) {
-//                            break;
-//                        } else {
-//                            System.out.println("Invalid choice!");
-//                        }
-//                        break;
-//                    case 3:
-//                        System.out.println(petChosen + " " + petName + " is resting soundly...");
-//                        petEnergy += 4;
-//                        petHappiness -= 1;
-//                        break;
-//                    case 4:
-//                        boolean loopStore = true;
-//
-//                        while (loopStore) {
-//                            System.out.println("---------------------------------------");
-//                            System.out.println("Welcome to BurgerPaw! \uD83D\uDC3E");
-//                            System.out.println("---------------------------------------");
-//                            System.out.println("You currently have: " + petMoney + " coins, would you like to buy anything?");
-//                            System.out.println("1. Yes!");
-//                            System.out.println("2. No, go back.");
-//
-//                            int choiceStore = sc.nextInt();
-//
-//                            if (choiceStore == 1) {
-//                                System.out.println("---------------------------------------");
-//                                System.out.println("1. Snack Treats ................ 1 \uD83E\uDE99");
-//                                System.out.println("2. French Fries ................ 2 \uD83E\uDE99");
-//                                System.out.println("3. Mini Burger ................ 3 \uD83E\uDE99");
-//
-//                                System.out.println("Which one would you like to order?");
-//
-//                                int foodChosen = sc.nextInt();
-//
-//                                if (foodChosen == 1) {
-//                                    if (petMoney >= 1) {
-//                                        System.out.println("Successfully bought 1 Snack Treat!");
-//                                        petSnack += 1;
-//                                        petMoney -= 1;
-//                                    } else {
-//                                        System.out.println("You don't have enough money!");
-//                                    }
-//                                } else if (foodChosen == 2) {
-//                                    if (petMoney >= 2) {
-//                                        System.out.println("Successfully bought 1 bag of French Fries!");
-//                                        frenchFries += 1;
-//                                        petMoney -= 2;
-//                                    } else {
-//                                        System.out.println("You don't have enough money!");
-//                                    }
-//                                } else if (foodChosen == 3) {
-//                                    if (petMoney >= 3) {
-//                                        System.out.println("Successfully bought 1 Mini Burger!");
-//                                        miniBurger += 1;
-//                                        petMoney -= 3;
-//                                    } else {
-//                                        System.out.println("You don't have enough money!");
-//                                    }
-//                                } else {
-//                                    System.out.println("Invalid choice!");
-//                                }
-//                            } else if (choiceStore == 2) {
-//                                loopStore = false;
-//                            } else {
-//                                System.out.println("Invalid choice!");
-//                            }
-//                        }
-//                        break;
-//                    case 5:
-//                        System.out.println("---------------------------------------");
-//                        if (petHappiness > 7 && petHunger > 4 && petEnergy > 5) {
-//                            System.out.println(petChosen + " " + petName + " is happy and active!");
-//                        } else if (petHunger <= 3) {
-//                            System.out.println(petChosen + " " + petName + " is hungry! Feed " + petName + "!");
-//                        } else if (petEnergy <= 3) {
-//                            System.out.println(petChosen + " " + petName + " is sleepy! Put " + petName + " to bed!");
-//                        } else if (petHappiness <= 3) {
-//                            System.out.println(petChosen + " " + petName + " is sad :( Play with " + petName + "!");
-//                        } else if (petEnergy > 7 && petHunger < 5) {
-//                            System.out.println(petChosen + " " + petName + " is hyperactive!");
-//                        } else if (petHappiness <= 3 && petHunger <= 3 && petEnergy <= 3) {
-//                            System.out.println(petChosen + " " + petName + " is in his last hours...");
-//                        } else {
-//                            System.out.println(petChosen + " " + petName + " is doing okay.");
-//                        }
-//                        break;
-//                    case 6:
-//                        System.out.println("Exiting program...");
-//                        actionLoop = false;
-//                        playAgain = false;
-//                        break;
-//                    default:
-//                        System.out.println("Invalid choice! Please choose a number from 1-6.");
-//                        break;
-//                }
-//            }
+            System.out.println("---------------------------------------");
+            System.out.println("              GAME OVER");
+            System.out.println("---------------------------------------");
+            System.out.println("Bosses defeated: " + (combatNum -1));
+            System.out.println("Final runes: " + playerRunes);
+            System.out.println();
 
-            // crear otro tamagotchi if dead :')
-            if (!petAlive) {
-                System.out.println("Would you like to create a new Tamagotchi?");
-                System.out.println("1. Yes");
-                System.out.println("2. No");
-                System.out.print("Enter your choice: ");
+            System.out.println("Do you want to play again? (YES/NO): ");
+            sc.nextLine();
+            String playAgainChoice = sc.nextLine().toUpperCase();
 
-                int newPetChoice = sc.nextInt();
-
-                if (newPetChoice == 1) {
-                    System.out.println("\n\n");
-                    playAgain = true;
-                } else {
-                    System.out.println("Thanks for playing! Goodbye!");
-                    playAgain = false;
-                }
+            if (playAgainChoice.equals("NO")) {
+                playAgain = false;
+                System.out.println("May the Golden Order shine through you, Tarnished.");
+            } else {
+                System.out.println("Starting anew...");
             }
         }
-
     }
 }
