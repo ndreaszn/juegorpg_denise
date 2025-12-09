@@ -71,4 +71,4 @@ El juego termina cuando tu salud llega a 0. Tu puntuación final muestra:
 
 ---
 
-*Que la Orden Dorada brille a través de ti, Tarnished.*
+*May the Golden Order shine through you, Tarnished.*
