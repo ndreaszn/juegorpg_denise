@@ -7,6 +7,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         Random random = new Random();
 
+        // arrays
         String[] enemy = {"Radahn", "Malekith", "Morgott", "Godfrey", "Malenia"};
         String[] potions = {"Health potion", "Magic potion", "Damage potion", "Extreme damage potion"};
         String[] inventory = new String[10];
@@ -65,6 +66,7 @@ public class Main {
             sc.nextLine();
             String playerName = sc.nextLine();
 
+            // intitial stats
             boolean confirmStart = false;
             int playerHealth = 100;
             int maxHealth = 100;
@@ -75,6 +77,7 @@ public class Main {
             int spellDamage = 35;
             int playerRunes = 0;
 
+            // asks if user wants to change anything
             while (!confirmStart) {
                 System.out.println("\n---------------------------------------");
                 System.out.println("Your character: " + classChosen + " " + playerName);
@@ -151,13 +154,14 @@ public class Main {
 
             System.out.println("----------------------------------------------");
 
-            int combatNum = 0;
+            int combatNum = 0; // after every fight, bosses gets stronger
             boolean playerAlive = true;
 
             while (playerAlive) {
                 combatNum++;
                 String currentEnemy = enemy[random.nextInt(enemy.length)];
                 int enemyHealth = random.nextInt(61) + 40 + (combatNum - 1) * 5;
+                // bound to 61 because that way the enemy health added randomizes from 0-60. then since the minimum health is 40, just add +40 afterwards. and since enemy gets stronger after every combat, add +5 to their health depending on the combat number
 
             System.out.println("\nWhile walking through the fields, " + currentEnemy + " appeared before you!");
             System.out.println();
@@ -211,7 +215,7 @@ public class Main {
                     // magiccc
                     if (playerMana < 25) {
                         System.out.println("Not enough mana! 25 mana minimum required.");
-                        continue; // i didnt even know this existed
+                        continue; // i didnt even know this existed, gracias stack overflow
                     }
 
                     playerMana -= 25;
@@ -225,6 +229,7 @@ public class Main {
                         continue;
                     }
 
+                    // lists out inventory items depending on how many you have
                     System.out.println("Your inventory:");
                     for (int i = 0; i < inventoryCount; i++) {
                         System.out.println((i + 1) + ". " + inventory[i]);
@@ -260,6 +265,7 @@ public class Main {
                             break;
                     }
 
+                    // when item is used, -1 inventory count
                     for (int i = itemChoice - 1; i < inventoryCount - 1; i++) {
                         inventory[i] = inventory[i + 1];
                     }
@@ -270,7 +276,7 @@ public class Main {
                     playerRunes -= 5;
                     if (playerRunes < 0) {
                         playerRunes = 0;
-                    }
+                    } // makes sure runes aren't negative
                     combatActive = false;
                     continue;
                 } else {
@@ -283,6 +289,7 @@ public class Main {
                     System.out.println("          GREAT ENEMY FELLED");
                     System.out.println("---------------------------------------");
 
+                    // reward system
                     String loot = potions[random.nextInt(potions.length)];
                     int runesReward = random.nextInt(5) + 1;
                     playerRunes += runesReward;
@@ -297,6 +304,7 @@ public class Main {
 
                     System.out.println("You received " + runesReward + " runes!");
 
+                    //healing after every fight
                     int healing = random.nextInt(maxHealth - 50 - 25 + 1) + 25;
                     playerHealth += healing;
                     if (playerHealth > maxHealth) {
@@ -349,10 +357,11 @@ public class Main {
 
                 }
 
+            // tavern
             if (playerWon && playerAlive) {
                 System.out.println("Celebrate win at the tavern? (YES/NO)");
                 sc.nextLine();
-                String enterTavern = sc.nextLine().toUpperCase();
+                String enterTavern = sc.nextLine().toUpperCase(); // in case user inputs "yes/no"
 
                 if (enterTavern.equals("YES")) {
                     System.out.println("Welcome to the Tavern!");
@@ -361,9 +370,10 @@ public class Main {
                     String[] tavernItems = new String[3];
                     int[] tavernPrices = new int[3];
 
+                    // lists random items with random prices with the arrays
                     for (int i = 0; i < 3; i++) {
                         tavernItems[i] = potions[random.nextInt(potions.length)];
-                        tavernPrices[i] = random.nextInt(5)+ 2;
+                        tavernPrices[i] = random.nextInt(5)+ 2; // min price 2-6
                         System.out.println((i + 1) + ". " + tavernItems[i] + " - " + tavernPrices[i] + " runes");
                     }
                     System.out.println("4. Leave tavern");
